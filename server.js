@@ -52,6 +52,10 @@ const models = require('./server/models');
 require('./routes/auth')(app, passport);
 
 
+// API Routes
+require('./routes/api')(app, passport);
+
+
 // load passport strategies
 require('./config/passport.js')(passport, models.user);
 
@@ -68,4 +72,6 @@ app.use('/', require('./routes'));
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, console.log(`Server started on port ${PORT}`));
+const server = app.listen(PORT, console.log(`Server started on port ${PORT}`));
+
+module.exports = server;
