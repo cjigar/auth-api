@@ -6,7 +6,6 @@ var config = require('./server/config/config')[env];
 const express = require('express');
 const logger = require('morgan');
 const expressLayouts = require('express-ejs-layouts');
-const expressValidator = require('express-validator');
 const flash = require('express-flash');
 const bodyParser = require('body-parser');
 const session = require('express-session');
@@ -51,22 +50,21 @@ const models = require('./server/models');
 // Auth Routes
 require('./routes/auth')(app, passport);
 
+// load passport strategies
+require('./config/passport.js')(passport, models.user);
 
 // API Routes
 require('./routes/api')(app, passport);
 
 
-// load passport strategies
-require('./config/passport.js')(passport, models.user);
-
-
-// Sync Database
-models.sequelize.sync().then(() => {
-    console.log('Database connected succesfully..!');
-}).catch((err) => {
-    console.log(err, 'Database connection refuse..!');
-});
-
+// Check Database connection
+if (env == 'development') {
+    models.sequelize.sync().then(() => {
+        console.log('Database connected succesfully..!');
+    }).catch((err) => {
+        console.log(err, 'Database connection refuse..!');
+    });
+}
 // Routes
 app.use('/', require('./routes'));
 
