@@ -1,11 +1,15 @@
-describe('User', function() {
-  describe('#save()', function() {
-    it('should save without error', function(done) {
-      var user = new User('Luna');
-      user.save(function(err) {
-        if (err) done(err);
-        else done();
-      });
+const assert = require('chai').assert;
+const env = process.env.NODE_ENV || 'development';
+
+describe('User', () => {
+    describe('#save()', () => {
+
+        before('DELETE TEST DATA', () => {
+            //      datacreation.clearTestDataForPendingPost();
+        });
+
+        it('should save without error', (done) => {
+
+        });
     });
-  });
 });

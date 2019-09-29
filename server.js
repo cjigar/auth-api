@@ -17,7 +17,7 @@ const passport = require('passport');
 const app = express();
 
 // Log requests to the console.
-app.use(logger('development'));
+app.use(logger(env));
 
 // EJS
 app.use(expressLayouts);

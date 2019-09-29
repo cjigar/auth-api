@@ -4,12 +4,13 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "mocha",
+    "test": "NODE_ENV=test mocha",
+    "pretest": "node_modules/.bin/sequelize db:migrate",
     "prestart": "node_modules/.bin/sequelize db:migrate",
-    "start": "nodemon server.js"
+    "start": "NODE_ENV=development nodemon server.js"
   },
   "keywords": [],
-  "author": "Jigar",
+  "author": "Jigar Chaudhary",
   "license": "ISC",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
@@ -37,12 +38,13 @@
     "sequelize-cli": "^5.5.1"
   },
   "devDependencies": {
-    "mocha": "^6.2.0",
+    "chai": "^4.2.0",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "eslint-plugin-standard": "^4.0.0",
+    "mocha": "^6.2.0"
   }
 }
