@@ -1,5 +1,10 @@
 // https://github.com/bradtraversy/node_passport_login/blob/master/app.js
 // https://blog.logrocket.com/setting-up-a-restful-api-with-node-js-and-postgresql-d96d6fc892d8
+// https://code.tutsplus.com/tutorials/using-passport-with-sequelize-and-mysql--cms-27537
+const dotenv = require('dotenv');
+const env = process.env.NODE_ENV || 'development';
+dotenv.config({ path: env + '.env' });
+var config = require('./server/config/config')[env];
 
 const express = require('express');
 const logger = require('morgan');
@@ -11,10 +16,11 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
+
 const app = express();
 
 // Log requests to the console.
-app.use(logger('dev'));
+app.use(logger('development'));
 
 // EJS
 app.use(expressLayouts);
@@ -51,6 +57,16 @@ app.use((req, res, next) => {
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error');
     next();
+});
+
+// Models
+var models = require('./server/models');
+
+// Sync Database
+models.sequelize.sync().then(() => {
+    console.log('Nice! Database looks fine');
+}).catch((err) => {
+    console.log(err, 'Something went wrong with the Database Update!');
 });
 
 // Routes
