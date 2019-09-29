@@ -1,6 +1,3 @@
-// https://github.com/bradtraversy/node_passport_login/blob/master/app.js
-// https://blog.logrocket.com/setting-up-a-restful-api-with-node-js-and-postgresql-d96d6fc892d8
-// https://code.tutsplus.com/tutorials/using-passport-with-sequelize-and-mysql--cms-27537
 const dotenv = require('dotenv');
 const env = process.env.NODE_ENV || 'development';
 dotenv.config({ path: env + '.env' });
@@ -25,22 +22,7 @@ app.use(logger('development'));
 // EJS
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
-
 // app.set('view',path.join(__dirname,'views'));
-
-
-// Express session
-app.use(
-    session({
-        secret: 'secret',
-        resave: true,
-        saveUninitialized: true
-    })
-);
-
-// Passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
 
 
 // Connect flash
@@ -50,6 +32,10 @@ app.use(bodyParser.json({}));
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(expressValidator());
 
+// Passport middleware
+app.use(session({ secret: 'secret', resave: true, saveUninitialized: true })); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
 
 // Global variables
 app.use((req, res, next) => {
@@ -61,6 +47,14 @@ app.use((req, res, next) => {
 
 // Models
 var models = require('./server/models');
+
+// Routes
+var authRoute = require('./routes/auth')(app, passport);
+
+
+// load passport strategies
+require('./config/passport.js')(passport, models.user);
+
 
 // Sync Database
 models.sequelize.sync().then(() => {
