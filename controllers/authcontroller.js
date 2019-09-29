@@ -1,28 +1,26 @@
-var exports = module.exports = {};
-exports.signup = function (req, res) {
-
+const signup = function (req, res) {
     res.render('signup');
-
 };
 
-exports.signin = function (req, res) {
-
+const signin = function (req, res) {
     res.render('signin');
-
 };
 
-exports.dashboard = function (req, res) {
-
+const dashboard = function (req, res) {
     res.render('dashboard', {
         user: req.user
     });
-
 };
 
-exports.logout = function (req, res) {
-
+const logout = function (req, res) {
     req.session.destroy((err) => {
         res.redirect('/');
     });
+};
 
+module.exports = {
+    signup,
+    signin,
+    dashboard,
+    logout
 };

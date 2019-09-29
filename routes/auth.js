@@ -1,4 +1,4 @@
-var authController = require('../controllers/authcontroller.js');
+const authController = require('../controllers/authcontroller.js');
 
 module.exports = function (app, passport) {
 
@@ -12,12 +12,9 @@ module.exports = function (app, passport) {
     }
     ));
 
-
     app.get('/dashboard', isLoggedIn, authController.dashboard);
 
-
     app.get('/logout', authController.logout);
-
 
     app.post('/signin', passport.authenticate('local-signin', {
         successRedirect: '/dashboard',

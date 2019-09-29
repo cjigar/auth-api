@@ -11,7 +11,7 @@ const flash = require('express-flash');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+// const LocalStrategy = require('passport-local').Strategy;
 
 
 const app = express();
@@ -46,10 +46,10 @@ app.use((req, res, next) => {
 });
 
 // Models
-var models = require('./server/models');
+const models = require('./server/models');
 
-// Routes
-var authRoute = require('./routes/auth')(app, passport);
+// Auth Routes
+require('./routes/auth')(app, passport);
 
 
 // load passport strategies
@@ -58,9 +58,9 @@ require('./config/passport.js')(passport, models.user);
 
 // Sync Database
 models.sequelize.sync().then(() => {
-    console.log('Nice! Database looks fine');
+    console.log('Database connected succesfully..!');
 }).catch((err) => {
-    console.log(err, 'Something went wrong with the Database Update!');
+    console.log(err, 'Database connection refuse..!');
 });
 
 // Routes
