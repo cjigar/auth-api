@@ -18,6 +18,8 @@ router.post('/api/signin', [
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
     }
+
+    // Check authentication using database then after allow user to login.
     res.send('Signin');
 });
 
@@ -37,6 +39,8 @@ router.post('/api/signup', [
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
     }
+
+    // Save into the database;
     res.send('Signup');
 });
 
