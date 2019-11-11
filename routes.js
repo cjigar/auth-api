@@ -1,47 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const { check, validationResult } = require('express-validator');
+const apiController = require('./controllers/ApiController');
+const apiValidationController = require('./controllers/ApiValidationController');
 
-// Welcome Page
-router.get('/api', (req, res) => res.send('welcome'));
+// Check API
+router.get('/apiCheck', apiController.apiCheck);
 
 // Signin Page
-router.post('/api/signin', [
-    // email must be an email
-    check('email').isEmail(),
-    // password must be at least 5 chars long
-    check('password').isLength({ min: 5 })
-], (req, res) => {
+router.post('/signin', apiValidationController.signin, apiController.signin);
 
-    // Finds the validation errors in this request and wraps them in an object with handy functions
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
-    }
-
-    // Check authentication using database then after allow user to login.
-    res.send('Signin');
-});
+// Signup Page
+router.post('/signup', apiValidationController.signup, apiController.signup);
 
 
 // Signup Page
-router.post('/api/signup', [
-    // name is field is required
-    check('name').not().isEmpty(),
-    // email must be an email
-    check('email').isEmail(),
-    // password must be at least 5 chars long
-    check('password').isLength({ min: 5 })
-], (req, res) => {
+router.get('/getusers', apiController.getAllUsers);
 
-    // Finds the validation errors in this request and wraps them in an object with handy functions
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
-    }
-
-    // Save into the database;
-    res.send('Signup');
-});
-
+router.get('/getusers', apiController.createUser);
 module.exports = router;
