@@ -11,9 +11,37 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const passport = require('passport');
 // const LocalStrategy = require('passport-local').Strategy;
-
+const cors = require('cors');
+const swaggerJSDoc = require('swagger-jsdoc');
 
 const app = express();
+
+// Cors for swagger
+app.use(cors());
+
+// swagger definition
+const swaggerDefinition = {
+    info: {
+        title: 'Innovify - Probation sample work',
+        version: '1.0.0',
+        description: 'RESTful API using Swagger'
+    },
+    host: 'localhost:5000',
+    basePath: '/'
+};
+
+// options for the swagger docs
+const options = {
+    // import swaggerDefinitions
+    swaggerDefinition: swaggerDefinition,
+    // path to the API docs
+    apis: ['./routes.js']
+};
+
+// initialize swagger-jsdoc
+const swaggerSpec = swaggerJSDoc(options);
+
+
 
 // Log requests to the console.
 app.use(logger(env));
@@ -56,6 +84,22 @@ require('./config/passport.js')(passport, models.user);
 // API Routes
 // require('./routes/api')(app, passport);
 
+// Routes
+app.use('/api', require('./routes'));
+
+// serve swaggger
+app.get('/swager.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
+
+
+// Default route
+app.use((req, res) => {
+    res.sendStatus(404);
+});
+
+
 
 // Check Database connection
 if (env == 'development') {
@@ -65,13 +109,6 @@ if (env == 'development') {
         console.log(err, 'Database connection refuse..!');
     });
 }
-// Routes
-app.use('/api', require('./routes'));
-
-// Default route
-app.use((req, res) => {
-    res.sendStatus(404);
-});
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, console.log(`Server started on port ${PORT}`));
