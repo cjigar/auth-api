@@ -34,6 +34,18 @@ const swaggerDefinition = {
 const options = {
     // import swaggerDefinitions
     swaggerDefinition: swaggerDefinition,
+    authAction: {
+        JWT: {
+            name: 'JWT',
+            schema: {
+                type: 'apiKey',
+                in: 'header',
+                name: 'Authorization',
+                description: ''
+            },
+            value: 'Bearer <JWT>'
+        }
+    },
     // path to the API docs
     apis: ['./routes.js']
 };

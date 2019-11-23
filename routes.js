@@ -52,7 +52,7 @@ router.get('/users', apiController.getAllUsers);
  *           type: string
  *     responses:
  *       200:
- *         description: A single user
+ *         description: User's object
  *         schema:
  *           $ref: '#/definitions/User'
  */
@@ -78,9 +78,10 @@ router.get('/users/:id', apiController.getOneUser);
  *         required: true
  *     responses:
  *       200:
- *         description: Successfully created
+ *         description: User's object
  *         schema:
  *           $ref: '#/definitions/User'
+ *
  */
 router.post('/users', apiController.createUser);
 
@@ -110,7 +111,7 @@ router.post('/users', apiController.createUser);
  *         required: true
  *     responses:
  *       200:
- *         description: Successfully updated
+ *         description: User's object
  *         schema:
  *           $ref: '#/definitions/User'
  */
@@ -146,8 +147,6 @@ router.put('/users/:id', apiController.updateUser);
  *                name:
  *                  type: string
  *                  example: Jessica Smith
- *      '400':
- *        description: The specified user ID is invalid (not a number).
  *      '404':
  *        description: A user with the specified ID was not found.
  *      default:
