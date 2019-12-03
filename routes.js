@@ -16,7 +16,31 @@ const apiValidationController = require('./controllers/ApiValidationController')
  *       email:
  *         type: string
  */
-
+/**
+ * @swagger
+ * /api/auth:
+ *   get:
+ *     tags:
+ *       - Users
+ *     description: Returns user token
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: email
+ *         description: User's email
+ *         in: formData
+ *         required: true
+ *       - name: password
+ *         description: User's password
+ *         in: formData
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: An array of users
+ *         schema:
+ *           $ref: '#/definitions/User'
+ */
+// router.get('/users', apiController.authToken);
 /**
  * @swagger
  * /api/users:

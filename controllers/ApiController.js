@@ -2,9 +2,15 @@
 // Models
 const models = require('../server/models');
 const passport = require('../config/passport');
+const jwt = require('jsonwebtoken');
 class ApiController {
 
-    static getAllUsers (req, res) {
+    static authToken(req, res) {
+        // const token = jwt.sign({ id: id }, 'jsonPrivateKey');
+        // res.send(token);
+    }
+
+    static getAllUsers(req, res) {
 
         models.user.findAll({}).then((users) => {
             const user_list = [];
@@ -13,7 +19,7 @@ class ApiController {
                     user_list.push({
                         id: user.id,
                         name: user.name,
-                        email: user.name
+                        email: user.email
                     });
                 });
             } else {
@@ -27,7 +33,7 @@ class ApiController {
         });
     }
 
-    static getOneUser (req, res) {
+    static getOneUser(req, res) {
 
         const userId = req.params.id;
 
@@ -49,7 +55,7 @@ class ApiController {
 
     }
 
-    static createUser (req, res) {
+    static createUser(req, res) {
 
         models.user.create({
             name: req.body.name,
@@ -73,7 +79,7 @@ class ApiController {
         });
     }
 
-    static updateUser (req, res) {
+    static updateUser(req, res) {
 
         const userId = req.params.id;
 
@@ -103,7 +109,7 @@ class ApiController {
         });
     }
 
-    static deleteUser (req, res) {
+    static deleteUser(req, res) {
         const userId = req.params.id;
         models.user.destroy({
             where: {

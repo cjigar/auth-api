@@ -8,3 +8,7 @@ Follow the below article.
 // https://code.tutsplus.com/tutorials/using-passport-with-sequelize-and-mysql--cms-27537
 
 //https://github.com/lyndachiwetelu/using-passport-with-sequelize-and-mysql
+
+https://itnext.io/setting-up-swagger-in-a-node-js-application-d3c4d7aa56d4
+
+sudo kill -9 `sudo lsof -t -i:5000`

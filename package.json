@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha",
+    "test": "NODE_ENV=test mocha --exit",
     "pretest": "node_modules/.bin/sequelize db:migrate",
     "prestart": "node_modules/.bin/sequelize db:migrate",
     "start": "NODE_ENV=development nodemon server.js"
@@ -27,6 +27,8 @@
     "express-messages": "^1.0.1",
     "express-session": "^1.16.2",
     "express-validator": "^6.2.0",
+    "helmet": "^3.21.2",
+    "jsonwebtoken": "^8.5.1",
     "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-http": "^0.3.0",
@@ -35,7 +37,8 @@
     "pg-hstore": "^2.3.3",
     "sequelize": "^5.19.0",
     "sequelize-cli": "^5.5.1",
-    "swagger-jsdoc": "^3.4.0"
+    "swagger-jsdoc": "^3.4.0",
+    "swagger-ui-express": "^4.1.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",

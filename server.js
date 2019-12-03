@@ -3,6 +3,7 @@ const env = process.env.NODE_ENV || 'development';
 dotenv.config({ path: env + '.env' });
 var config = require('./server/config/config')[env];
 
+const jwt = require('jsonwebtoken');
 const express = require('express');
 const logger = require('morgan');
 const expressLayouts = require('express-ejs-layouts');
@@ -10,42 +11,43 @@ const flash = require('express-flash');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const passport = require('passport');
+const helmet = require('helmet');
 // const LocalStrategy = require('passport-local').Strategy;
 const cors = require('cors');
 const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 const app = express();
 
 // Cors for swagger
 app.use(cors());
 
+// Helmet for the security headers
+app.use(helmet());
+
 // swagger definition
 const swaggerDefinition = {
     info: {
-        title: 'Innovify - Probation sample work',
+        title: 'Innovify - sample work',
         version: '1.0.0',
         description: 'RESTful API using Swagger'
     },
     host: 'localhost:5000',
-    basePath: '/'
+    basePath: '/',
+    securityDefinitions: {
+        bearerAuth: {
+            type: 'apiKey',
+            name: 'Authorization',
+            scheme: 'bearer',
+            in: 'header'
+        }
+    }
 };
 
 // options for the swagger docs
 const options = {
     // import swaggerDefinitions
     swaggerDefinition: swaggerDefinition,
-    authAction: {
-        JWT: {
-            name: 'JWT',
-            schema: {
-                type: 'apiKey',
-                in: 'header',
-                name: 'Authorization',
-                description: ''
-            },
-            value: 'Bearer <JWT>'
-        }
-    },
     // path to the API docs
     apis: ['./routes.js']
 };
@@ -53,6 +55,13 @@ const options = {
 // initialize swagger-jsdoc
 const swaggerSpec = swaggerJSDoc(options);
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// serve swaggger
+app.get('/swager.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
 
 
 // Log requests to the console.
@@ -88,23 +97,16 @@ app.use((req, res, next) => {
 const models = require('./server/models');
 
 // Auth Routes
-require('./routes/auth')(app, passport);
+// require('./routes/auth')(app, passport);
 
 // load passport strategies
-require('./config/passport.js')(passport, models.user);
+// require('./config/passport.js')(passport, models.user);
 
 // API Routes
 // require('./routes/api')(app, passport);
 
 // Routes
 app.use('/api', require('./routes'));
-
-// serve swaggger
-app.get('/swager.json', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(swaggerSpec);
-});
-
 
 // Default route
 app.use((req, res) => {
