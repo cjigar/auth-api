@@ -39,8 +39,7 @@ class ApiController {
                                 updatedAt: new Date()
                             })
                             .then(() => {
-                                console.log('user created in db');
-                                res.status(200).send({ message: 'user created' });
+                                res.status(200).send({ message: 'User created' });
                             });
                     });
                 });
@@ -56,11 +55,11 @@ class ApiController {
                 console.error(`error ${err}`);
             }
             if (info !== undefined) {
-                console.error(info.message);
-                if (info.message === 'bad username') {
-                    res.status(401).send(info.message);
+                console.error(info);
+                if (info.message === 'Bad username') {
+                    res.status(401).send({ info });
                 } else {
-                    res.status(403).send(info.message);
+                    res.status(403).send({ info });
                 }
             } else {
 
@@ -77,7 +76,8 @@ class ApiController {
                         res.status(200).send({
                             auth: true,
                             token,
-                            message: 'user found & logged in'
+                            data: user,
+                            message: 'User found & logged in'
                         });
                     });
                 });
@@ -86,6 +86,7 @@ class ApiController {
     }
 
     static getAllUsers (req, res) {
+
         models.user.findAll({}).then((users) => {
             const user_list = [];
             if (users) {
@@ -99,11 +100,9 @@ class ApiController {
             } else {
                 throw new Error('Oh, Something went wrong !!');
             }
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(user_list));
+            res.status(200).send(user_list);
         }).catch((err) => {
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify({ message: err.message }));
+            res.status(404).send({ message: err.message });
         });
     }
 
@@ -150,7 +149,7 @@ class ApiController {
                 console.error(info.message);
                 res.status(403).send(info.message);
             } else {
-                user.findOne({
+                models.user.findOne({
                     where: {
                         email: req.body.email
                     }
@@ -182,7 +181,7 @@ class ApiController {
                 console.error(info.message);
                 res.status(403).send(info.message);
             } else if (user.id === req.query.id) {
-                user.destroy({
+                models.user.destroy({
                     where: {
                         id: req.query.id
                     }

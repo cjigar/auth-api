@@ -47,7 +47,7 @@ const apiController = require('./controllers/ApiController');
  *       '200':
  *         description: User created
  *       '403':
- *         description: Username or email already taken
+ *         description: Email already taken
  */
 
 router.post('/register', apiController.userRegister);
@@ -126,7 +126,7 @@ router.get('/users', apiController.getAllUsers);
  *       '401':
  *         description: No auth token / no user found in db with that name
  *       '403':
- *         description: JWT token and email from client don't match
+ *         description: JWT token and requested id from client don't match
  */
 router.get('/user', apiController.getOneUser);
 
@@ -160,10 +160,12 @@ router.get('/user', apiController.getOneUser);
  *     responses:
  *       '200':
  *         description: User info updated
- *       '403':
+ *       '401':
  *         description: No authorization / user not found
+ *       '403':
+ *         description: Authentication error
  */
-router.put('/user/:id', apiController.updateUser);
+router.put('/user', apiController.updateUser);
 
 /**
  * @swagger
@@ -177,12 +179,12 @@ router.put('/user/:id', apiController.updateUser);
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: id
- *         description: User's id
- *         in: path
- *         required: true
+ *       - in: query
+ *         name: id
  *         schema:
  *           type: string
+ *         required:
+ *           - id
  *     responses:
  *       '200':
  *         description: User deleted from db

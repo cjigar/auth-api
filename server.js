@@ -3,7 +3,6 @@ const env = process.env.NODE_ENV || 'development';
 dotenv.config({ path: env + '.env' });
 var config = require('./server/config/config')[env];
 
-const jwt = require('jsonwebtoken');
 const express = require('express');
 const logger = require('morgan');
 const expressLayouts = require('express-ejs-layouts');

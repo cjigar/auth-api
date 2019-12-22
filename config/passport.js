@@ -27,7 +27,7 @@ passport.use(
             }).then(user => {
                 if (user != null) {
                     return done(null, false, {
-                        message: 'username or email already taken'
+                        message: 'Email already taken'
                     });
                 }
                 bcrypt.hash(password, BCRYPT_SALT_ROUNDS).then(hashedPassword => {
@@ -62,11 +62,11 @@ passport.use(
                 }
             }).then(user => {
                 if (user === null) {
-                    return done(null, false, { message: 'bad username' });
+                    return done(null, false, { message: 'Bad username' });
                 }
                 bcrypt.compare(password, user.password).then(response => {
                     if (response !== true) {
-                        return done(null, false, { message: 'passwords do not match' });
+                        return done(null, false, { message: 'Passwords do not match' });
                     }
                     return done(null, user);
                 });
