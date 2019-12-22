@@ -72,7 +72,6 @@ describe('User', () => {
         });
     });
 
-
     describe('GET /api/users', () => {
         it('User should list all register users', async () => {
             const res = await request(server).get('/api/users');
