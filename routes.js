@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const apiController = require('./controllers/ApiController');
-const apiValidationController = require('./controllers/ApiValidationController');
-
+// const apiValidationController = require('./controllers/ApiValidationController');
 
 /**
  * @swagger
@@ -40,7 +39,44 @@ const apiValidationController = require('./controllers/ApiValidationController')
  *         schema:
  *           $ref: '#/definitions/User'
  */
-// router.get('/users', apiController.authToken);
+router.get('/users', apiController.authToken);
+
+/**
+ * @swagger
+ * /api/register:
+ *   post:
+ *     tags:
+ *       - Users
+ *     name: Register
+ *     summary: Register a new user
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         schema:
+ *           $ref: '#/definitions/User'
+ *           type: object
+ *           properties:
+ *             email:
+ *               type: string
+ *             password:
+ *               type: string
+ *               format: password
+ *         required:
+ *           - email
+ *           - password
+ *     responses:
+ *       '200':
+ *         description: User created
+ *       '403':
+ *         description: Username or email already taken
+ */
+
+router.get('/register', apiController.getUserRegister);
+
 /**
  * @swagger
  * /api/users:
@@ -48,6 +84,8 @@ const apiValidationController = require('./controllers/ApiValidationController')
  *     tags:
  *       - Users
  *     description: Returns all users
+ *     security:
+ *       - bearerAuth: []
  *     produces:
  *       - application/json
  *     responses:
@@ -143,7 +181,7 @@ router.put('/users/:id', apiController.updateUser);
 
 /**
  * @swagger
- * /api/Users/{id}:
+ * /api/users/{id}:
  *   delete:
  *     tags:
  *       - Users
