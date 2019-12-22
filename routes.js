@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const apiController = require('./controllers/ApiController');
-// const apiValidationController = require('./controllers/ApiValidationController');
 
 /**
  * @swagger
@@ -14,32 +13,11 @@ const apiController = require('./controllers/ApiController');
  *         type: string
  *       email:
  *         type: string
+ *       password:
+ *          type: string
  */
-/**
- * @swagger
- * /api/auth:
- *   get:
- *     tags:
- *       - Users
- *     description: Returns user token
- *     produces:
- *       - application/json
- *     parameters:
- *       - name: email
- *         description: User's email
- *         in: formData
- *         required: true
- *       - name: password
- *         description: User's password
- *         in: formData
- *         required: true
- *     responses:
- *       200:
- *         description: An array of users
- *         schema:
- *           $ref: '#/definitions/User'
- */
-router.get('/users', apiController.authToken);
+
+
 
 /**
  * @swagger
@@ -57,14 +35,11 @@ router.get('/users', apiController.authToken);
  *       - name: body
  *         in: body
  *         schema:
- *           $ref: '#/definitions/User'
  *           type: object
- *           properties:
- *             email:
- *               type: string
- *             password:
- *               type: string
- *               format: password
+ *           example:
+ *               name: Jigar
+ *               email: jigar.c@innovify.com
+ *               password: jigar
  *         required:
  *           - email
  *           - password
@@ -75,7 +50,38 @@ router.get('/users', apiController.authToken);
  *         description: Username or email already taken
  */
 
-router.get('/register', apiController.getUserRegister);
+router.post('/register', apiController.userRegister);
+
+/**
+ * @swagger
+ * /api/auth:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Authenticate the user
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         schema:
+ *           type: object
+ *           example:
+ *             email: jigar.c@innovify.com
+ *             password: jigar
+ *         required:
+ *           - email
+ *           - password
+ *     responses:
+ *       200:
+ *         description: An array of users
+ *         schema:
+ *           $ref: '#/definitions/User'
+ */
+router.post('/auth', apiController.auth);
+
 
 /**
  * @swagger
@@ -83,9 +89,7 @@ router.get('/register', apiController.getUserRegister);
  *   get:
  *     tags:
  *       - Users
- *     description: Returns all users
- *     security:
- *       - bearerAuth: []
+ *     summary: Return all registered users
  *     produces:
  *       - application/json
  *     responses:
@@ -98,94 +102,78 @@ router.get('/users', apiController.getAllUsers);
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/user:
  *   get:
  *     tags:
  *       - Users
- *     description: Returns a single user
+ *     summary: Return a login user
+ *     security:
+ *       - bearerAuth: []
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: id
- *         description: Users id
- *         in: path
- *         required: true
+ *       - in: query
+ *         name: id
  *         schema:
  *           type: string
+ *         required:
+ *           - id
  *     responses:
- *       200:
- *         description: User's object
+ *       '200':
+ *         description: A single user object
  *         schema:
  *           $ref: '#/definitions/User'
+ *       '401':
+ *         description: No auth token / no user found in db with that name
+ *       '403':
+ *         description: JWT token and email from client don't match
  */
-router.get('/users/:id', apiController.getOneUser);
+router.get('/user', apiController.getOneUser);
+
 
 /**
  * @swagger
- * /api/users:
- *   post:
- *     tags:
- *       - Users
- *     description: Creates a new users
- *     produces:
- *       - application/json
- *     parameters:
- *       - name: name
- *         description: User's name
- *         in: formData
- *         required: true
- *       - name: email
- *         description: User's email
- *         in: formData
- *         required: true
- *     responses:
- *       200:
- *         description: User's object
- *         schema:
- *           $ref: '#/definitions/User'
- *
- */
-router.post('/users', apiController.createUser);
-
-/**
- * @swagger
- * /api/users/{id}:
+ * /api/user:
  *   put:
  *     tags:
  *       - Users
- *     description: Updates a single user details
+ *     summary: Update a login user detail
+ *     security:
+ *       - bearerAuth: []
+ *     consumes:
+ *       - application/json
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: id
- *         description: User's id
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *       - name: name
- *         description: User's name
- *         in: formData
- *         required: true
- *       - name: email
- *         description: User's email
- *         in: formData
- *         required: true
- *     responses:
- *       200:
- *         description: User's object
+ *       - name: body
+ *         in: body
  *         schema:
  *           $ref: '#/definitions/User'
+ *           type: object
+ *           properties:
+ *             name:
+ *               type: string
+ *             email:
+ *               type: string
+  *         required:
+ *           - email
+ *     responses:
+ *       '200':
+ *         description: User info updated
+ *       '403':
+ *         description: No authorization / user not found
  */
-router.put('/users/:id', apiController.updateUser);
+router.put('/user/:id', apiController.updateUser);
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/user:
  *   delete:
  *     tags:
  *       - Users
- *     description: Deletes a single user if exists
+ *     summary: Delete a user if exists
+ *     security:
+ *       - bearerAuth: []
  *     produces:
  *       - application/json
  *     parameters:
@@ -196,24 +184,14 @@ router.put('/users/:id', apiController.updateUser);
  *         schema:
  *           type: string
  *     responses:
- *      '200':
- *        description: A user object.
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                status:
- *                  type: string
- *                  example: Success
- *                name:
- *                  type: string
- *                  example: Jessica Smith
- *      '404':
- *        description: A user with the specified ID was not found.
- *      default:
- *        description: Unexpected error
+ *       '200':
+ *         description: User deleted from db
+ *       '403':
+ *         description: Authentication error
+ *       '404':
+ *         description: No user in db with that name
+ *       '500':
+ *         description: Problem communicating with db
  */
-router.delete('/users/:id', apiController.deleteUser);
-
+router.delete('/user', apiController.deleteUser);
 module.exports = router;

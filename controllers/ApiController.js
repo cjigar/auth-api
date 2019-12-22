@@ -5,9 +5,51 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const jwtSecret = require('../config/jwtConfig');
 
+
 class ApiController {
 
-    static authToken (req, res) {
+    static userRegister (req, res) {
+        passport.authenticate('register', (err, user, info) => {
+
+            if (err) {
+                console.error(err);
+            }
+
+            if (info !== undefined) {
+                console.error(info.message);
+                res.status(403).send(info.message);
+            } else {
+                // eslint-disable-next-line no-unused-vars
+                req.logIn(user, error => {
+
+                    const data = {
+                        name: req.body.name,
+                        email: req.body.email
+                    };
+
+                    models.user.findOne({
+                        where: {
+                            email: data.email
+                        }
+                    }).then(user => {
+                        user
+                            .update({
+                                name: data.name,
+                                createdAt: new Date(),
+                                updatedAt: new Date()
+                            })
+                            .then(() => {
+                                console.log('user created in db');
+                                res.status(200).send({ message: 'user created' });
+                            });
+                    });
+                });
+            }
+        })(req, res);
+    }
+
+
+    static auth (req, res) {
 
         passport.authenticate('login', (err, user, info) => {
             if (err) {
@@ -21,10 +63,12 @@ class ApiController {
                     res.status(403).send(info.message);
                 }
             } else {
-                req.logIn(users, () => {
+
+                req.logIn(user, () => {
+
                     models.user.findOne({
                         where: {
-                            username: req.body.username
+                            email: req.body.email
                         }
                     }).then(user => {
                         const token = jwt.sign({ id: user.id }, jwtSecret.secret, {
@@ -38,48 +82,7 @@ class ApiController {
                     });
                 });
             }
-        });
-    }
-
-    static getUserRegister (req, res) {
-
-        passport.authenticate('register', (err, user, info) => {
-            if (err) {
-                console.error(err);
-            }
-
-            if (info !== undefined) {
-                console.error(info.message);
-                res.status(403).send(info.message);
-            } else {
-                // eslint-disable-next-line no-unused-vars
-                req.logIn(user, error => {
-                    console.log(user);
-                    const data = {
-                        name: req.body.name,
-                        email: req.body.email
-                    };
-                    console.log(data);
-                    models.user.findOne({
-                        where: {
-                            username: data.username
-                        }
-                    }).then(user => {
-                        console.log(user);
-                        user
-                            .update({
-                                first_name: data.first_name,
-                                last_name: data.last_name,
-                                email: data.email
-                            })
-                            .then(() => {
-                                console.log('user created in db');
-                                res.status(200).send({ message: 'user created' });
-                            });
-                    });
-                });
-            }
-        });
+        })(req, res);
     }
 
     static getAllUsers (req, res) {
@@ -110,17 +113,16 @@ class ApiController {
             if (err) {
                 console.log(err);
             }
+
             if (info !== undefined) {
-                console.log(info.message);
                 res.status(401).send(info.message);
-            } else if (user.username === req.query.username) {
+            } else if (user.id === req.query.id) {
                 models.user.findOne({
                     where: {
-                        username: req.query.username
+                        id: req.query.id
                     }
                 }).then((userInfo) => {
                     if (userInfo != null) {
-                        console.log('user found in db from findUsers');
                         res.status(200).send({
                             auth: true,
                             id: userInfo.id,
@@ -129,108 +131,76 @@ class ApiController {
                             message: 'user found in db'
                         });
                     } else {
-                        console.error('no user exists in db with that username');
-                        res.status(401).send('no user exists in db with that username');
+                        res.status(401).send('No user exists in db with requested id.');
                     }
                 });
             } else {
-                console.error('jwt id and username do not match');
-                res.status(403).send('username and jwt token do not match');
+                res.status(403).send('Requested id and jwt token do not match');
             }
-        });
-
-
-        // const userId = req.params.id;
-
-        // models.user.findByPk(userId).then((user) => {
-        //     if (user) {
-        //         res.setHeader('Content-Type', 'application/json');
-        //         res.send(JSON.stringify({
-        //             id: user.id,
-        //             name: user.name,
-        //             email: user.email
-        //         }));
-        //     } else {
-        //         throw new Error('Oh, Something went wrong !!');
-        //     }
-        // }).catch((err) => {
-        //     res.setHeader('Content-Type', 'application/json');
-        //     res.send(JSON.stringify({ message: err.message }));
-        // });
-
-    }
-
-    static createUser (req, res) {
-
-        models.user.create({
-            name: req.body.name,
-            email: req.body.email,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        }).then((user) => {
-            if (user) {
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify({
-                    id: user.id,
-                    name: user.name,
-                    email: user.email
-                }));
-            } else {
-                throw new Error('Oh, Something went wrong !!');
-            }
-        }).catch((err) => {
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify({ message: err.message }));
-        });
+        })(req, res);
     }
 
     static updateUser (req, res) {
 
-        const userId = req.params.id;
-
-        models.user.update({
-            name: req.body.name,
-            email: req.body.email,
-            updatedAt: new Date()
-        }, {
-            returning: true,
-            where: {
-                id: userId
+        passport.authenticate('jwt', { session: false }, (err, user, info) => {
+            if (err) {
+                console.error(err);
             }
-        }).then(([status, [user]]) => {
-            if (status) {
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify({
-                    id: user.id,
-                    name: user.name,
-                    email: user.email
-                }));
+            if (info !== undefined) {
+                console.error(info.message);
+                res.status(403).send(info.message);
             } else {
-                throw new Error('Oh, Something went wrong !!');
+                user.findOne({
+                    where: {
+                        email: req.body.email
+                    }
+                }).then((userInfo) => {
+                    if (userInfo != null) {
+                        userInfo
+                            .update({
+                                name: req.body.name,
+                                email: req.body.email
+                            })
+                            .then(() => {
+                                res.status(200).send({ auth: true, message: 'User updated' });
+                            });
+                    } else {
+                        res.status(401).send('No user exists in db to update');
+                    }
+                });
             }
-        }).catch((err) => {
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify({ message: err.message }));
-        });
+        })(req, res);
     }
 
     static deleteUser (req, res) {
-        const userId = req.params.id;
-        models.user.destroy({
-            where: {
-                id: userId
+
+        passport.authenticate('jwt', { session: false }, (err, user, info) => {
+            if (err) {
+                console.error(err);
             }
-        }).then((users) => {
-            res.setHeader('Content-Type', 'application/json');
-            if (users) {
-                res.send(JSON.stringify({ message: 'Record Successfully Deleted.' }));
+            if (info !== undefined) {
+                console.error(info.message);
+                res.status(403).send(info.message);
+            } else if (user.id === req.query.id) {
+                user.destroy({
+                    where: {
+                        id: req.query.id
+                    }
+                }).then((userInfo) => {
+                    if (userInfo === 1) {
+                        res.status(200).send('User deleted from db');
+                    } else {
+                        res.status(404).send('No user with requested id to delete');
+                    }
+                }).catch((error) => {
+                    res.status(500).send(error);
+                });
             } else {
-                throw new Error('Oh, Something went wrong !!');
+                res.status(403).send('Request id and jwt token do not match');
             }
-        }).catch((err) => {
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify({ message: err.message }));
-        });
+        })(req, res);
     }
+
 }
+
 module.exports = ApiController;

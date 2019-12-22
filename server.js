@@ -26,7 +26,7 @@ app.use(helmet());
 // swagger definition
 const swaggerDefinition = {
     info: {
-        title: 'Innovify - sample work',
+        title: 'Learning work',
         version: '1.0.0',
         description: 'RESTful API using Swagger'
     },
@@ -53,7 +53,7 @@ const options = {
 // initialize swagger-jsdoc
 const swaggerSpec = swaggerJSDoc(options);
 
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // serve swaggger
 app.get('/swager.json', (req, res) => {
@@ -64,16 +64,15 @@ app.get('/swager.json', (req, res) => {
 require('./config/passport');
 
 // Log requests to the console.
-app.use(logger(env));
+app.use(logger('dev'));
 
 // EJS
-// app.use(expressLayouts);
-// app.set('view engine', 'ejs');
+app.use(expressLayouts);
+app.set('view engine', 'ejs');
 // app.set('view',path.join(__dirname,'views'));
 
-
 // Connect flash
-// app.use(flash());
+app.use(flash());
 
 app.use(bodyParser.json({}));
 app.use(bodyParser.urlencoded({ extended: true }));
