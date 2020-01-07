@@ -180,10 +180,10 @@ class ApiController {
             if (info !== undefined) {
                 console.error(info.message);
                 res.status(403).send(info.message);
-            } else if (user.id === req.query.id) {
+            } else if (user.id === req.params.id) {
                 models.user.destroy({
                     where: {
-                        id: req.query.id
+                        id: user.id
                     }
                 }).then((userInfo) => {
                     if (userInfo === 1) {

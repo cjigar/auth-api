@@ -51,8 +51,26 @@ const options = {
 
 // initialize swagger-jsdoc
 const swaggerSpec = swaggerJSDoc(options);
+const setupOption = {
+    explorer: true
+}
+// const setupOption = {
+//     explorer: true,
+//     swaggerOptions: {
+//     urls: [
+//       {
+//         url: 'http://petstore.swagger.io/v2/swagger.json',
+//         name: 'Spec1'
+//       },
+//       {
+//         url: 'http://petstore.swagger.io/v2/swagger.json',
+//         name: 'Spec2'
+//       }
+//     ]
+//   }
+// }
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, setupOption));
 
 // serve swaggger
 app.get('/swager.json', (req, res) => {

@@ -102,7 +102,7 @@ router.get('/users', apiController.getAllUsers);
 
 /**
  * @swagger
- * /api/user:
+ * /api/users:
  *   get:
  *     tags:
  *       - Users
@@ -128,12 +128,12 @@ router.get('/users', apiController.getAllUsers);
  *       '403':
  *         description: JWT token and requested id from client don't match
  */
-router.get('/user', apiController.getOneUser);
+router.get('/users', apiController.getOneUser);
 
 
 /**
  * @swagger
- * /api/user:
+ * /api/users:
  *   put:
  *     tags:
  *       - Users
@@ -165,11 +165,11 @@ router.get('/user', apiController.getOneUser);
  *       '403':
  *         description: Authentication error
  */
-router.put('/user', apiController.updateUser);
+router.put('/users', apiController.updateUser);
 
 /**
  * @swagger
- * /api/user:
+ * /api/users/{id}:
  *   delete:
  *     tags:
  *       - Users
@@ -179,7 +179,7 @@ router.put('/user', apiController.updateUser);
  *     produces:
  *       - application/json
  *     parameters:
- *       - in: query
+ *       - in: path
  *         name: id
  *         schema:
  *           type: string
@@ -195,5 +195,5 @@ router.put('/user', apiController.updateUser);
  *       '500':
  *         description: Problem communicating with db
  */
-router.delete('/user', apiController.deleteUser);
+router.delete('/users/:id', apiController.deleteUser);
 module.exports = router;
